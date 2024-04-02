@@ -1,0 +1,59 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+.game-box {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.game-box div {
+   max-width: 100vw; 
+   width: 500px;
+}
+
+.game-data {
+    display: flex;
+    border: 1px solid black;
+}
+
+.game-data div {
+    width: 30%;
+    flex-grow: 1;
+    display: block;
+    text-align: center;
+    padding: 1em 0;
+}
+
+#game-board {
+    margin: 1em 0;
+    border: 1px solid black;
+    height: 500px;
+}
+
+.start-game {
+
+    padding: 1.5em;
+    border-radius: 10px;
+    border: none;
+    background-color: rgb(72, 160, 56);
+}
+
+.time-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1em 0;
+    border: 1px solid black;
+    padding-top: 1em;
+}
+
+
