@@ -46,7 +46,6 @@ body {
 }
 
 .start-game {
-
     padding: 1.5em;
     border-radius: 10px;
     border: none;
@@ -63,12 +62,29 @@ body {
     padding-top: 1em;
 }
 
+/* Game integral CSS */
+
 .frog {
-    background-color: green;
+    background-image: url("../assets/frog.png");
+    background-position: center;
+    background-size: cover;
+    z-index: 1;
+
 }
 
-.lillypad {
-    background-color: #fff73a;
+#game-board .lillypad {
+    background-color: #345b08;
     border: 6px dotted; 
+    border-radius: 50px;
 }
 
+.home {
+    background-image: url("../assets/frog.png");
+    background-position: center;
+    background-size: cover;
+    z-index: 1;
+}
+ 
+.car {
+    background-color: red;
+}
