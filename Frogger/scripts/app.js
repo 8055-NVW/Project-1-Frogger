@@ -33,7 +33,13 @@ let froggyCurrentPos = froggyStartPos;
 //array for lillypads(end-goal)
 
 // GameBoard constants
+//lillyPads
 const lillyPadCells = [1, 3, 5, 7]
+//Red carStart
+const redCarStart = 71
+const redCarStart2 = 53
+const carStartPositions = [71,53]
+
 
 
 // ? On Page Load
@@ -75,14 +81,16 @@ function makeGameBoard() {
         gameBoard.append(cell);
     }
     resetFrogPos()
-    car()
+    // insert obstacles on game board
+    loadAssets()
+
+    // obstacleMvmt(redCarStart2)
 }
 
 
 
 // function to handle keypress
 function inputHandler(e) {
-
     cells[froggyCurrentPos].classList.remove('frog')
 
     if (e.key === 'ArrowRight' && froggyCurrentPos % cols !== cols - 1) {
@@ -159,20 +167,19 @@ function lossHandler() {
         //display final score on lising final life
         //initiate board reset function
     }
-
 }
 
 
 //function to reset game board
 function gameReset() {
     //reset score
-    let score = 0;
+    score = 0;
     scoreEl.innerText = score
     //reset lives
-    let lives = 3;
+    lives = 3;
     livesEl.innerText = lives
     //reset time
-    let count = 60
+    count = 60
     countdownEl.innerText = count
     //enable start button
     startGameBtn.disabled = false
@@ -200,25 +207,115 @@ function gameReset() {
 //water element function
 //--function to create logs
 
-//function to create car
-function car() {
-    const carStartPos = 72
-    let currPos = carStartPos
-    function move() {
-        cells[currPos].classList.remove('car')
-        if (currPos === 63) {
-            currPos = currPos + cols
-        }
-        currPos--
-        collisionHandler(currPos)
-        cells[currPos].classList.add('car')
-    }
-    move()
-    setInterval(move, 100);
+//function to load obstacles 
+function loadAssets() {
+    //cars
+    cells[carStartPositions[0]].classList.add('car')
+    cells[carStartPositions[1]].classList.add('car')
 }
 
 
+//function to create car !!REDUNDANT
+// function redCars() {
+//     function car(redCarStart) {
+//         let currPos = redCarStart
+//         function move() {
+//             if(redCarStart === 72) {
+//                 cells[currPos].classList.remove('car')
+//             if (currPos === 63) {
+//                 currPos = currPos + cols
+//             } else if (currPos === 45) {
+//                 currPos = currPos + cols
+//             }
+//             currPos--
+//             collisionHandler(currPos)
+//             cells[currPos].classList.add('car')
+//             }
+            
+//         }
+//         move()
+//         setInterval(move, 200);
+//     }
+//     car(redCarStart)
+//     setTimeout(()=> {
+//         car(redCarStart);
+//     },800)
+// }
+// || startPos === 54
 
+// V2 Object Movement
+function obstacleMvmt(startPos) {
+    function obstacle(startPos) {
+        let currPos = startPos
+        function move() {
+            if(startPos === 71 || startPos === 53) {
+                cells[currPos].classList.remove('car')
+                if (currPos === 63) {
+                    currPos = currPos + cols
+                } else if (currPos === 45) {
+                    currPos = currPos + cols
+                }
+                currPos--
+            collisionHandler(currPos)
+            cells[currPos].classList.add('car')
+            } 
+        }
+        setInterval(move, 800);
+    }
+    obstacle(startPos)
+    setTimeout(()=> {
+        obstacle(startPos);
+    },3000)
+}
+
+// function move(carPositionArr,delay) {
+//     setInterval(()=> {
+//         carPositionArr.forEach((obs) => {
+//             //obstacle movement logic
+//             let obsPos = obs      
+//             cells[obsPos].classList.remove('car')
+//                 if(obsPos === 63 || obsPos === 45) {
+//                     obsPos+= cols
+//                 }
+//             collisionHandler(obsPos)
+//             obsPos--       
+//             cells[obsPos].classList.add('car')
+//         })
+//     },delay)
+// }
+
+// function move(carPositionArr, delay) {
+//     setInterval(() => {
+//         carPositionArr.forEach((obs) => {
+//             let obsPos = obs;
+//             cells[obsPos].classList.remove('car');
+//             if (obsPos === 63 || obsPos === 45) {
+//                 obsPos += cols;
+//             }
+//             collisionHandler(obsPos);
+//             obsPos--;
+//             cells[obsPos].classList.add('car');
+//         });
+//     }, delay);
+// }
+
+function move(carPositionArr, delay) {
+    setInterval(() => {
+        carPositionArr.forEach((obs, index) => {
+            // obstacle movement logic
+            let obsPos = obs;      
+            cells[obsPos].classList.remove('car');
+            if (obsPos === 63 || obsPos === 45) {
+                obsPos += cols;
+            }
+            collisionHandler(obsPos);
+            obsPos--;       
+            cells[obsPos].classList.add('car');
+            // Update the value in the original array
+            carPositionArr[index] = obsPos;
+        });
+    }, delay);
+}
 
 
 
@@ -226,6 +323,9 @@ function initializeGame() {
     startGameBtn.disabled = true
     //initialise grid load on start button click
     makeGameBoard()
+    // Move obstacles
+    move(carStartPositions,800)
+
 
 
     // function to manage timer interval
