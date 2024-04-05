@@ -35,28 +35,21 @@ let froggyCurrentPos = froggyStartPos;
 // GameBoard constants
 //lillyPads
 const lillyPadCells = [1, 3, 5, 7]
-//Red carStart
-const redCarStart = 71
-const redCarStart2 = 53
-const carStartPositions = [71,53]
+//roadStart
+const carStartRight = [71,66,49,45]
+const busStartLeft = [54,55,56]
+//Logs Start
+const r1LogStart =[9,10,14,15]
+const r2LogStart =[20,21,22]
+const r3logStart =[27,28,30,31]
+
 
 
 
 // ? On Page Load
 // view of highscore
 
-
-
-
-
-
-
 // ? Executions
-
-
-
-
-
 
 
 // ? Generate game board
@@ -76,15 +69,22 @@ function makeGameBoard() {
         //Make lillypads
         if (lillyPadCells.includes(index)) {
             cell.classList.add('lillypad')
+        } else if (cell.dataset.index <= 35) {
+            cell.classList.add('water')
+        } else if (cell.dataset.index <= 44) {
+            cell.classList.add('grass')
+        } else if (cell.dataset.index <= 71) {
+            cell.classList.add('road')
+        } else {
+            cell.classList.add('grass')
         }
+
         cells.push(cell);
         gameBoard.append(cell);
     }
     resetFrogPos()
-    // insert obstacles on game board
     loadAssets()
 
-    // obstacleMvmt(redCarStart2)
 }
 
 
@@ -105,8 +105,10 @@ function inputHandler(e) {
     } else if (e.key === 'ArrowDown' && cells[froggyCurrentPos + cols]) {
         froggyCurrentPos += cols
     }
+    setInterval(checkWin(froggyCurrentPos), 50)
+    // checkWin(froggyCurrentPos)
     cells[froggyCurrentPos].classList.add('frog')
-    checkWin(froggyCurrentPos)
+
 }
 
 
@@ -125,7 +127,7 @@ function resetFrogPos() {
 // function to handle collisions
 function collisionHandler(currentPos) {
     if (cells[currentPos].classList.contains('frog')) {
-        console.log('Hit Frog!')
+        // console.log('Hit Frog!')
         lossHandler()
     }
 }
@@ -137,7 +139,8 @@ function checkWin(currentPos) {
     if (cells[currentPos].classList.contains('lillypad')) {
         console.log('there!')
         winHandler(cells[currentPos])
-    }
+    } else if (cells[currentPos].classList.contains('car'))
+        console.log('frog hit car!')
 }
 
 
@@ -188,67 +191,27 @@ function gameReset() {
 
 
 
-//function to define water
-// mark predefined cells with class of .water
-// add styling to the .water class
-
-//function to define a road
-// mark predefined cells with class of .road
-// add styling to .road class
-
-
-
-//function to define multiple classes for collision objects cars/trucks/logs
-//obstacle functions
-//-- function to create car
-//-- create element
-//--
-
 //water element function
 //--function to create logs
 
 //function to load obstacles 
 function loadAssets() {
     //cars
-    cells[carStartPositions[0]].classList.add('car')
-    cells[carStartPositions[1]].classList.add('car')
+    carStartRight.forEach(position => {
+        cells[position].classList.add('car')
+    })
+
+    busStartLeft.forEach(block => {
+        cells[block].classList.add('bus')
+    })
 }
-
-
-//function to create car !!REDUNDANT
-// function redCars() {
-//     function car(redCarStart) {
-//         let currPos = redCarStart
-//         function move() {
-//             if(redCarStart === 72) {
-//                 cells[currPos].classList.remove('car')
-//             if (currPos === 63) {
-//                 currPos = currPos + cols
-//             } else if (currPos === 45) {
-//                 currPos = currPos + cols
-//             }
-//             currPos--
-//             collisionHandler(currPos)
-//             cells[currPos].classList.add('car')
-//             }
-            
-//         }
-//         move()
-//         setInterval(move, 200);
-//     }
-//     car(redCarStart)
-//     setTimeout(()=> {
-//         car(redCarStart);
-//     },800)
-// }
-// || startPos === 54
 
 // V2 Object Movement
 function obstacleMvmt(startPos) {
     function obstacle(startPos) {
         let currPos = startPos
         function move() {
-            if(startPos === 71 || startPos === 53) {
+            if (startPos === 71 || startPos === 53) {
                 cells[currPos].classList.remove('car')
                 if (currPos === 63) {
                     currPos = currPos + cols
@@ -256,66 +219,79 @@ function obstacleMvmt(startPos) {
                     currPos = currPos + cols
                 }
                 currPos--
-            collisionHandler(currPos)
-            cells[currPos].classList.add('car')
-            } 
+                // collisionHandler(currPos)
+                cells[currPos].classList.add('car')
+            }
         }
         setInterval(move, 800);
     }
     obstacle(startPos)
-    setTimeout(()=> {
+    setTimeout(() => {
         obstacle(startPos);
-    },3000)
+    }, 3000)
 }
 
-// function move(carPositionArr,delay) {
-//     setInterval(()=> {
-//         carPositionArr.forEach((obs) => {
-//             //obstacle movement logic
-//             let obsPos = obs      
-//             cells[obsPos].classList.remove('car')
-//                 if(obsPos === 63 || obsPos === 45) {
-//                     obsPos+= cols
-//                 }
-//             collisionHandler(obsPos)
-//             obsPos--       
-//             cells[obsPos].classList.add('car')
-//         })
-//     },delay)
-// }
 
-// function move(carPositionArr, delay) {
+//Object inteval control
+
+
+function moveBus(busArr,delay) {
+    let busPositions = [...busArr]
+    setInterval(() => {
+        busPositions.forEach(busPos => {
+            cells[busPos].classList.remove('bus');
+        });
+        busPositions = busPositions.map(busPos => {
+            busPos++;
+            if (busPos > 62) {
+                busPos = 54;
+            }
+            cells[busPos].classList.add('bus');
+            return busPos;
+        });
+    }, delay);
+}
+
+
+
+//obstacle move left logic
+function moveCar(carPositionArr, delay) {
+    let tempArr = [...carPositionArr]
+    setInterval(() => {
+        tempArr.forEach((obs, index) => {
+            let obsPos = obs;
+            collisionHandler(obsPos)
+            cells[obsPos].classList.remove('car')
+            if (obsPos === 63 || obsPos === 45) {
+                obsPos += cols;
+            }
+            obsPos--;
+            setInterval(collisionHandler(obsPos), 50)
+            cells[obsPos].classList.add('car')
+            tempArr[index] = obsPos
+        });
+    }, delay);
+}
+
+// obstacle move right logic
+// function moveRight(carPositionArr, delay) {
+//     let tempArr = [...carPositionArr]
 //     setInterval(() => {
-//         carPositionArr.forEach((obs) => {
+//         tempArr.forEach((obs, index) => {
 //             let obsPos = obs;
-//             cells[obsPos].classList.remove('car');
-//             if (obsPos === 63 || obsPos === 45) {
-//                 obsPos += cols;
+//             collisionHandler(obsPos)
+//             cells[obsPos].classList.remove('car')
+//             if (obsPos === 62) {
+//                 obsPos -= cols;
 //             }
-//             collisionHandler(obsPos);
-//             obsPos--;
-//             cells[obsPos].classList.add('car');
+//             obsPos++;
+//             collisionHandler(obsPos)
+//             cells[obsPos].classList.add('car')
+//             tempArr[index] = obsPos
 //         });
 //     }, delay);
 // }
 
-function move(carPositionArr, delay) {
-    setInterval(() => {
-        carPositionArr.forEach((obs, index) => {
-            // obstacle movement logic
-            let obsPos = obs;      
-            cells[obsPos].classList.remove('car');
-            if (obsPos === 63 || obsPos === 45) {
-                obsPos += cols;
-            }
-            collisionHandler(obsPos);
-            obsPos--;       
-            cells[obsPos].classList.add('car');
-            // Update the value in the original array
-            carPositionArr[index] = obsPos;
-        });
-    }, delay);
-}
 
 
 
@@ -324,13 +300,14 @@ function initializeGame() {
     //initialise grid load on start button click
     makeGameBoard()
     // Move obstacles
-    move(carStartPositions,800)
+    // moveCar(carStartRight,500)
+    // moveBus(busStartLeft,300)
 
 
 
     // function to manage timer interval
     function startCountdown() {
-        count = 10
+        count = 20
         countdownEl.innerText = count
         // function to handel seconds
         function timer() {

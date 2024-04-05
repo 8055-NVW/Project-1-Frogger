@@ -40,7 +40,7 @@ body {
 
 #game-board div {
     border: 1px solid lightgrey;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     display: inline-block;
     text-align: center;
 }
@@ -68,7 +68,7 @@ body {
     background-image: url("../assets/frog.png");
     background-position: center;
     background-size: cover;
-    z-index: 1;
+    z-index: 2;
 
 }
 
@@ -79,12 +79,39 @@ body {
 }
 
 .home {
+    background-color: rgb(121, 213, 84);
     background-image: url("../assets/frog.png");
     background-position: center;
     background-size: cover;
     z-index: 1;
 }
  
-.car {
-    background-color: red;
+#game-board .car {
+    background-image: url("../assets/car.png");
+    z-index: 2;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#game-board .bus {
+    background-color: rgb(142, 50, 50);
+    z-index: 2;
+}
+
+.water {
+    background-color: #0087ff;
+}
+
+.grass {
+    /* background-image: url("../assets/grass-1.png"); */
+    background-color: rgb(205, 182, 93);
+    z-index: auto;
+}
+.road {
+    background-color: gray;
+    border: 20px solid white;
+}
+.log {
+    background-color: #795548;
 }
