@@ -62,12 +62,32 @@ body {
     padding-top: 1em;
 }
 
+.time-info .countdown-outer {
+    display: flex;
+    flex-direction: row-reverse;
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 80%;
+    height: 30px;
+}
+
+.countdown-outer .countdown {
+
+    background-color: green;
+    width: 100%;
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 1, 1)
+}
+
+
+
 /* Game integral CSS */
 
 .frog {
     background-image: url("../assets/frog.png");
     background-position: center;
     background-size: cover;
+    
     z-index: 1;
 }
 
@@ -93,11 +113,14 @@ body {
     background-position: center;
     background-size: contain;
     background-repeat: no-repeat;
+
+
 }
 
 #game-board .bus {
     background-color: rgb(142, 50, 50);
     z-index: 2;
+
 }
 
 .water {

@@ -5,7 +5,9 @@ const livesEl = document.querySelector(".lives");
 const scoreEl = document.querySelector(".score");
 // queryselector for span.high-score
 const highScoreEl = document.querySelector(".high-score");
-// querySelector for span.countdown
+// // querySelector for div.countdown-outer
+// const countDownOuter = document.querySelector('.countdown-outer')
+// querySelector for div.countdown
 const countdownEl = document.querySelector(".countdown");
 // querySelector for button.start-game
 const startGameBtn = document.querySelector(".start-game");
@@ -22,7 +24,8 @@ let win;
 let lives = 30;
 livesEl.innerText = lives;
 //variable for countdown timer
-let count = 60;
+const setTime = 20
+let count = setTime;
 countdownEl.innerText = count;
 // variable for frog starting position
 const froggyStartPos = 76;
@@ -109,6 +112,8 @@ function inputHandler(e) {
     cells[froggyCurrentPos].classList.add("frog");
 }
 
+//
+
 // function to reset frogs position
 function resetFrogPos() {
     //remove frog from board
@@ -130,7 +135,7 @@ function collisionHandler(currentPos) {
 //function to check win
 function checkWinLose(currentPos) {
     if (cells[currentPos].classList.contains("lillypad")) {
-        winHandler(cells[currentPos]);
+        handleWin(cells[currentPos]);
     } else if (
         cells[currentPos].classList.contains("water") &&
         !cells[currentPos].classList.contains("log")
@@ -139,14 +144,18 @@ function checkWinLose(currentPos) {
     }
 }
 
+
 // function to handle for win(land on lillypad)
-function winHandler(lily) {
+function handleWin(lily) {
     // add to score variable and update text
     score += 50;
     scoreEl.innerText = score;
     // keep frog class on the .lillypad cell
     lily.classList.add("home");
     // reset position of frog
+    clearTimeout(startCountdown);
+    clearInterval(interval);
+    startCountdown()
     resetFrogPos();
 }
 
@@ -174,7 +183,7 @@ function gameReset() {
     lives = 3;
     livesEl.innerText = lives;
     //reset time
-    count = 60;
+    count = setTime;
     countdownEl.innerText = count;
     //enable start button
     startGameBtn.disabled = false;
@@ -310,36 +319,54 @@ function animateObstacles() {
     moveLogRight(logRowThree, 500);
 }
 
+// HandleCount
+function startCountdown() {
+    count = setTime;
+    countdownEl.innerText = count;
+    // function to handle seconds
+    function timer() {
+        count--;
+        let remainingPercentage = (count/setTime) * 100
+        countdownEl.style.width = `${remainingPercentage}%`;
+        countdownEl.innerText = count;
+        ;
+        if (lives < 1) {
+            clearTimeout(startCountdown);
+            clearInterval(interval);
+            gameReset();
+        }
+        if (count < 1) {
+            lossHandler();
+            clearInterval(interval);
+            setTimeout(startCountdown, 1500);
+        }
+    }
+    const interval = setInterval(timer, 1000);
+}
+
+//Handle Game
 function initializeGame() {
     startGameBtn.disabled = true;
     //initialise grid load on start button click
     makeGameBoard();
     animateObstacles();
-
-    // function to manage timer interval
-    function startCountdown() {
-        count = 20;
-        countdownEl.innerText = count;
-        // function to handel seconds
-        function timer() {
-            count--;
-            countdownEl.innerText = count;
-            document.addEventListener("keyup", inputHandler);
-            if (lives < 1) {
-                clearTimeout(startCountdown);
-                clearInterval(interval);
-                gameReset();
-            }
-            if (count < 1) {
-                lossHandler();
-                clearInterval(interval);
-                setTimeout(startCountdown, 1500);
-            }
-        }
-        const interval = setInterval(timer, 1000);
-    }
+    document.addEventListener("keyup", inputHandler)
     startCountdown();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ? Events
 // eventlistener for start-game button click
