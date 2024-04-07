@@ -12,20 +12,18 @@ const startGameBtn = document.querySelector(".start-game");
 // querySelector for div#game-board
 const gameBoard = document.querySelector("#game-board");
 
-
-
 // ? Variables
 // global score variable
 let score = 0;
-scoreEl.innerText = score
+scoreEl.innerText = score;
 // check win variable?
 let win;
 // variable for lives
 let lives = 30;
-livesEl.innerText = lives
+livesEl.innerText = lives;
 //variable for countdown timer
-let count = 60
-countdownEl.innerText = count
+let count = 60;
+countdownEl.innerText = count;
 // variable for frog starting position
 const froggyStartPos = 76;
 //variable for froggys current position
@@ -33,31 +31,33 @@ let froggyCurrentPos = froggyStartPos;
 //array for lillypads(end-goal)
 
 // GameBoard constants
+//Grid Constants
+const cols = 9;
+const rows = 9;
+const cellCount = rows * cols;
+const cells = [];
+
 //lillyPads
-const lillyPadCells = [1, 3, 5, 7]
-//roadStart
-const carStartRight = [71,66,49,45]
-const busStartLeft = [54,55,56]
-//Logs Start
-const r1LogStart =[9,10,14,15]
-const r2LogStart =[20,21,22]
-const r3logStart =[27,28,30,31]
+const lillyPadCells = [1, 3, 5, 7];
 
+//Road Start Positiopns
+const carRight = [71, 66, 49, 45];
+const busLeft = [54, 55, 56];
 
+//Logs Start Positions
+const logRowOne = [9, 10, 11, 14, 15, 16];
+const logRowTwo = [20, 21, 22];
+const logRowThree = [33, 34, 35];
 
+//Frog on Log Variable
+let frogMoved = false;
 
 // ? On Page Load
 // view of highscore
 
 // ? Executions
 
-
-// ? Generate game board
-const cols = 9;
-const rows = 9;
-const cellCount = rows * cols;
-const cells = [];
-
+// Function to generate game board
 function makeGameBoard() {
     for (let index = 0; index < cellCount; index++) {
         const cell = document.createElement("div");
@@ -68,103 +68,96 @@ function makeGameBoard() {
         cell.style.height = `${100 / rows}%`;
         //Make lillypads
         if (lillyPadCells.includes(index)) {
-            cell.classList.add('lillypad')
+            cell.classList.add("lillypad");
+            //make Water
         } else if (cell.dataset.index <= 35) {
-            cell.classList.add('water')
+            cell.classList.add("water");
+            //make Grass
         } else if (cell.dataset.index <= 44) {
-            cell.classList.add('grass')
+            cell.classList.add("grass");
+            //make road
         } else if (cell.dataset.index <= 71) {
-            cell.classList.add('road')
+            cell.classList.add("road");
         } else {
-            cell.classList.add('grass')
+            //make grass
+            cell.classList.add("grass");
         }
-
         cells.push(cell);
         gameBoard.append(cell);
     }
-    resetFrogPos()
-    loadAssets()
-
+    resetFrogPos();
+    loadAssets();
 }
-
-
 
 // function to handle keypress
 function inputHandler(e) {
-    cells[froggyCurrentPos].classList.remove('frog')
+    cells[froggyCurrentPos].classList.remove("frog");
 
-    if (e.key === 'ArrowRight' && froggyCurrentPos % cols !== cols - 1) {
-        froggyCurrentPos++
-    } else if (e.key === 'ArrowLeft' && froggyCurrentPos % cols !== 0) {
-        froggyCurrentPos--
+    if (e.key === "ArrowRight" && froggyCurrentPos % cols !== cols - 1) {
+        froggyCurrentPos++;
+    } else if (e.key === "ArrowLeft" && froggyCurrentPos % cols !== 0) {
+        froggyCurrentPos--;
         //Problem Point Sorted :D
-    } else if (e.key === 'ArrowUp' && cells[froggyCurrentPos - cols]) {
-        if (!cells[froggyCurrentPos - cols].classList.contains('home')) {
-            froggyCurrentPos -= cols
+    } else if (e.key === "ArrowUp" && cells[froggyCurrentPos - cols]) {
+        if (!cells[froggyCurrentPos - cols].classList.contains("home")) {
+            froggyCurrentPos -= cols;
         }
-    } else if (e.key === 'ArrowDown' && cells[froggyCurrentPos + cols]) {
-        froggyCurrentPos += cols
+    } else if (e.key === "ArrowDown" && cells[froggyCurrentPos + cols]) {
+        froggyCurrentPos += cols;
     }
-    setInterval(checkWin(froggyCurrentPos), 50)
-    // checkWin(froggyCurrentPos)
-    cells[froggyCurrentPos].classList.add('frog')
-
+    checkWinLose(froggyCurrentPos);
+    cells[froggyCurrentPos].classList.add("frog");
 }
-
-
 
 // function to reset frogs position
 function resetFrogPos() {
     //remove frog from board
-    cells.forEach(cell => cell.classList.remove('frog'))
-    // reset 
-    froggyCurrentPos = froggyStartPos
-    cells[froggyCurrentPos].classList.add('frog')
+    cells.forEach((cell) => cell.classList.remove("frog"));
+    // reset
+    froggyCurrentPos = froggyStartPos;
+    setTimeout(() => {
+        cells[froggyCurrentPos].classList.add("frog");
+    }, 500);
 }
-
-
 
 // function to handle collisions
 function collisionHandler(currentPos) {
-    if (cells[currentPos].classList.contains('frog')) {
-        // console.log('Hit Frog!')
-        lossHandler()
+    if (cells[currentPos].classList.contains("frog")) {
+        lossHandler();
     }
 }
 
-
-
 //function to check win
-function checkWin(currentPos) {
-    if (cells[currentPos].classList.contains('lillypad')) {
-        console.log('there!')
-        winHandler(cells[currentPos])
-    } else if (cells[currentPos].classList.contains('car'))
-        console.log('frog hit car!')
+function checkWinLose(currentPos) {
+    if (cells[currentPos].classList.contains("lillypad")) {
+        winHandler(cells[currentPos]);
+    } else if (
+        cells[currentPos].classList.contains("water") &&
+        !cells[currentPos].classList.contains("log")
+    ) {
+        lossHandler();
+    }
 }
-
-
 
 // function to handle for win(land on lillypad)
 function winHandler(lily) {
     // add to score variable and update text
-    score += 50
-    scoreEl.innerText = score
+    score += 50;
+    scoreEl.innerText = score;
     // keep frog class on the .lillypad cell
-    lily.classList.add('home')
+    lily.classList.add("home");
     // reset position of frog
-    resetFrogPos()
+    resetFrogPos();
 }
-
 
 // function to handle lose
 function lossHandler() {
     //check lives left
     if (lives > 0) {
         //deduct life
-        lives--
-        livesEl.innerText = lives
-        resetFrogPos()
+        lives--;
+        livesEl.innerText = lives;
+        resetFrogPos();
     } else {
         // complete later
         //display final score on lising final life
@@ -172,175 +165,182 @@ function lossHandler() {
     }
 }
 
-
 //function to reset game board
 function gameReset() {
     //reset score
     score = 0;
-    scoreEl.innerText = score
+    scoreEl.innerText = score;
     //reset lives
     lives = 3;
-    livesEl.innerText = lives
+    livesEl.innerText = lives;
     //reset time
-    count = 60
-    countdownEl.innerText = count
+    count = 60;
+    countdownEl.innerText = count;
     //enable start button
-    startGameBtn.disabled = false
+    startGameBtn.disabled = false;
 }
 
+//function to load singel assets
+function autoAssetLoader(arr, className) {
+    arr.forEach((index) => {
+        cells[index].classList.add(className);
+    });
+}
 
-
-
-//water element function
-//--function to create logs
-
-//function to load obstacles 
+//function to load all assets
 function loadAssets() {
-    //cars
-    carStartRight.forEach(position => {
-        cells[position].classList.add('car')
-    })
-
-    busStartLeft.forEach(block => {
-        cells[block].classList.add('bus')
-    })
+    autoAssetLoader(carRight, "car");
+    autoAssetLoader(busLeft, "bus");
+    autoAssetLoader(logRowOne, "log");
+    autoAssetLoader(logRowTwo, "log");
+    autoAssetLoader(logRowThree, "log");
 }
 
-// V2 Object Movement
-function obstacleMvmt(startPos) {
-    function obstacle(startPos) {
-        let currPos = startPos
-        function move() {
-            if (startPos === 71 || startPos === 53) {
-                cells[currPos].classList.remove('car')
-                if (currPos === 63) {
-                    currPos = currPos + cols
-                } else if (currPos === 45) {
-                    currPos = currPos + cols
-                }
-                currPos--
-                // collisionHandler(currPos)
-                cells[currPos].classList.add('car')
-            }
-        }
-        setInterval(move, 800);
-    }
-    obstacle(startPos)
-    setTimeout(() => {
-        obstacle(startPos);
-    }, 3000)
-}
+// FUNCTIONS FOR OBSTACLES
 
-
-//Object inteval control
-
-
-function moveBus(busArr,delay) {
-    let busPositions = [...busArr]
+//Obstacle move right logic
+function moveRight(arr, delay) {
+    let positions = [...arr];
     setInterval(() => {
-        busPositions.forEach(busPos => {
-            cells[busPos].classList.remove('bus');
+        positions.forEach((pos) => {
+            cells[pos].classList.remove("bus");
+            collisionHandler(pos)
         });
-        busPositions = busPositions.map(busPos => {
-            busPos++;
-            if (busPos > 62) {
-                busPos = 54;
+        positions = positions.map((pos) => {
+            pos++;
+            if (pos > 62) {
+                pos -= cols;
             }
-            cells[busPos].classList.add('bus');
-            return busPos;
+            collisionHandler(pos)
+            cells[pos].classList.add("bus");
+            return pos;
         });
     }, delay);
 }
 
-
-
-//obstacle move left logic
-function moveCar(carPositionArr, delay) {
-    let tempArr = [...carPositionArr]
+//Obstacle move left logic
+function moveLeft(carPositionArr, delay) {
+    let tempArr = [...carPositionArr];
     setInterval(() => {
         tempArr.forEach((obs, index) => {
             let obsPos = obs;
-            collisionHandler(obsPos)
-            cells[obsPos].classList.remove('car')
+            collisionHandler(obsPos);
+            cells[obsPos].classList.remove("car");
             if (obsPos === 63 || obsPos === 45) {
                 obsPos += cols;
             }
             obsPos--;
-            setInterval(collisionHandler(obsPos), 50)
-            cells[obsPos].classList.add('car')
-            tempArr[index] = obsPos
+            collisionHandler(obsPos);
+            cells[obsPos].classList.add("car");
+            tempArr[index] = obsPos;
         });
     }, delay);
 }
 
-// obstacle move right logic
-// function moveRight(carPositionArr, delay) {
-//     let tempArr = [...carPositionArr]
-//     setInterval(() => {
-//         tempArr.forEach((obs, index) => {
-//             let obsPos = obs;
-//             collisionHandler(obsPos)
-//             cells[obsPos].classList.remove('car')
-//             if (obsPos === 62) {
-//                 obsPos -= cols;
-//             }
-//             obsPos++;
-//             collisionHandler(obsPos)
-//             cells[obsPos].classList.add('car')
-//             tempArr[index] = obsPos
-//         });
-//     }, delay);
-// }
+//Function to move Log Left
+function moveLogLeft(arr, delay) {
+    let positions = [...arr];
+    setInterval(() => {
+        positions.forEach((pos) => {
+            moveFrogOnLog(pos, "left");
+            cells[pos].classList.remove("log");
+        });
+        positions = positions.map((pos) => {
+            pos--;
+            if (pos < 18) {
+                pos += cols;
+            }
+            cells[pos].classList.add("log");
+            return pos;
+        });
+    }, delay);
+}
 
+//Function to Move Log Right
+function moveLogRight(arr, delay) {
+    let positions = [...arr];
+    setInterval(() => {
+        positions.forEach((pos) => {
+            moveFrogOnLog(pos, "right");
+            cells[pos].classList.remove("log");
+        });
+        positions = positions.map((pos) => {
+            pos++;
+            if (arr === logRowOne && pos > 17) {
+                pos -= cols;
+            }
+            if (arr === logRowThree && pos > 35) {
+                pos -= cols;
+                if(cells[pos].classList.contains('frog')){
+                    console.log('OUT!')
+                }
+            }
+            cells[pos].classList.add("log");
+            return pos;
+        });
+    }, delay);
+}
 
+//Function to Move Frog on the Log
+function moveFrogOnLog(pos, direction) {
+    if (!frogMoved && cells[pos].classList.contains("frog")) {
+        cells[froggyCurrentPos].classList.remove("frog");
+        if (direction === "left") {
+            froggyCurrentPos--;
+        } else if (direction === "right") {
+            froggyCurrentPos++;
+        }
+        cells[froggyCurrentPos].classList.add("frog");
+        frogMoved = true;
+    } else {
+        frogMoved = false;
+    }
+    if (froggyCurrentPos % cols === cols - 1 || froggyCurrentPos < 18) {
+        // resetFrogPos()
+        console.log('hit right/left')
+    }
+}
 
+//Function to Initialize Movement of all Moving Elements
+function animateObstacles() {
+    moveLeft(carRight, 500);
+    moveRight(busLeft, 500);
+    moveLogRight(logRowOne, 500);
+    moveLogLeft(logRowTwo, 500);
+    moveLogRight(logRowThree, 500);
+}
 
 function initializeGame() {
-    startGameBtn.disabled = true
+    startGameBtn.disabled = true;
     //initialise grid load on start button click
-    makeGameBoard()
-    // Move obstacles
-    // moveCar(carStartRight,500)
-    // moveBus(busStartLeft,300)
-
-
+    makeGameBoard();
+    animateObstacles();
 
     // function to manage timer interval
     function startCountdown() {
-        count = 20
-        countdownEl.innerText = count
+        count = 20;
+        countdownEl.innerText = count;
         // function to handel seconds
         function timer() {
-            count--
-            countdownEl.innerText = count
-            document.addEventListener('keyup', inputHandler)
-
+            count--;
+            countdownEl.innerText = count;
+            document.addEventListener("keyup", inputHandler);
             if (lives < 1) {
-                clearTimeout(startCountdown)
-                clearInterval(interval)
-                gameReset()
+                clearTimeout(startCountdown);
+                clearInterval(interval);
+                gameReset();
             }
             if (count < 1) {
-                //refactored this 
-                lossHandler()
-                // lives--;
-                // livesEl.innerText = lives
-                // resetFrogPos()
-                clearInterval(interval)
+                lossHandler();
+                clearInterval(interval);
                 setTimeout(startCountdown, 1500);
-
             }
-
         }
-        const interval = setInterval(timer, 1000)
+        const interval = setInterval(timer, 1000);
     }
-    startCountdown()
+    startCountdown();
 }
 
-
 // ? Events
-
-// eventlistener for start-game button click   
-startGameBtn.addEventListener('click', initializeGame)
-
-
+// eventlistener for start-game button click
+startGameBtn.addEventListener("click", initializeGame);

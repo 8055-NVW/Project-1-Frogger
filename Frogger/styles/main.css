@@ -34,12 +34,12 @@ body {
 
 #game-board {
     margin: 1em 0;
-    /* border: 1px solid lightgrey; */
+    
     height: 600px;
 }
 
 #game-board div {
-    border: 1px solid lightgrey;
+    /* border: 1px solid lightgrey; */
     /* border-radius: 20px; */
     display: inline-block;
     text-align: center;
@@ -68,21 +68,22 @@ body {
     background-image: url("../assets/frog.png");
     background-position: center;
     background-size: cover;
-    z-index: 2;
-
+    z-index: 1;
 }
 
 #game-board .lillypad {
-    background-color: #345b08;
-    border: 6px dotted; 
-    border-radius: 50px;
+    background-image: url('../assets/lilypad.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+
 }
 
-.home {
-    background-color: rgb(121, 213, 84);
-    background-image: url("../assets/frog.png");
+#game-board .home {
+    background-image: url("../assets/frog.png"), url('../assets/lilypad.jpg');
     background-position: center;
     background-size: cover;
+    background-repeat: no-repeat;
     z-index: 1;
 }
  
@@ -100,17 +101,24 @@ body {
 }
 
 .water {
-    background-color: #0087ff;
+    background-color: #0072bb;
 }
 
 .grass {
-    /* background-image: url("../assets/grass-1.png"); */
-    background-color: rgb(205, 182, 93);
-    z-index: auto;
+    background-color: green;
+    /* background-image: url("../assets/grass.jpg");
+    background-position: center;
+    background-size: contain; */
 }
+/* .grass .frog{
+    background-image: url("../assets/frog.png"), url('../assets/grass.jpg');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+ } */
 .road {
     background-color: gray;
-    border: 20px solid white;
+
 }
 .log {
     background-color: #795548;
