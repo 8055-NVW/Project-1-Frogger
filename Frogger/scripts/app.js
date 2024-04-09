@@ -11,6 +11,8 @@ const countdownEl = document.querySelector(".countdown")
 const startGameBtn = document.querySelector(".start-game")
 // querySelector for div#game-board
 const gameBoard = document.querySelector("#game-board")
+const startScreenEl = document.querySelector('.rules-score')
+const outcomeMessage = document.querySelector('#message')
 
 // ? Variables
 // global score variable
@@ -24,7 +26,7 @@ livesEl.innerText = lives
 //variable for countdown timer
 const setTime = 20
 let count = setTime;
-countdownEl.innerText = count
+// countdownEl.innerText = count
 // variable for frog starting position
 const froggyStartPos = 76
 //variable for froggys current position
@@ -38,7 +40,7 @@ let frogMoved = false
 const cols = 9
 const rows = 9
 const cellCount = rows * cols
-const cells = []
+let cells = []
 
 //lillyPads
 const lillyPadCells = [1, 3, 5, 7]
@@ -65,8 +67,10 @@ let timer
 
 // Function to generate game board
 function makeGameBoard() {
+    startScreenEl.style.display = 'none'
     gameReset()
     startGameBtn.disabled = true
+    startGameBtn.style.pointerEvents = 'none'
     for (let index = 0; index < cellCount; index++) {
         const cell = document.createElement("div")
         cell.innerText = index
@@ -74,34 +78,25 @@ function makeGameBoard() {
         cell.classList.add("grid-cell")
         cell.style.width = `${100 / cols}%`
         cell.style.height = `${100 / rows}%`
-        //Make lillypads
         if (lillyPadCells.includes(index)) {
             cell.classList.add("lillypad")
-            //make Water
         } else if (cell.dataset.index <= 35) {
             cell.classList.add("water")
-            //make Grass
         } else if (cell.dataset.index <= 44) {
             cell.classList.add("grass")
-            //make road
         } else if (cell.dataset.index <= 71) {
             cell.classList.add("road")
         } else {
-            //make grass
             cell.classList.add("grass")
         }
         cells.push(cell)
         gameBoard.append(cell)
     }
-
-    resetFrogPos()
-
 }
 
 // function to handle keypress
 function inputHandler(e) {
     cells[froggyCurrentPos].classList.remove("frog")
-
     if (e.key === "ArrowRight" && froggyCurrentPos % cols !== cols - 1) {
         froggyCurrentPos++
     } else if (e.key === "ArrowLeft" && froggyCurrentPos % cols !== 0) {
@@ -116,8 +111,6 @@ function inputHandler(e) {
     }
     cells[froggyCurrentPos].classList.add("frog")
 }
-
-//
 
 // function to reset frogs position
 function resetFrogPos() {
@@ -134,7 +127,7 @@ function checkLose() {
         case cells[froggyCurrentPos].classList.contains("water") &&
             !cells[froggyCurrentPos].classList.contains("log"):
         case count < 0:
-            lossHandler();
+            handleLoss();
             break;
         default:
             break;
@@ -147,12 +140,12 @@ function checkWin() {
         frogsHome++
         count = 20
         console.log(frogsHome)
-        scoreEl.innerText = score;
+        // scoreEl.innerText = score;
         cells[froggyCurrentPos].classList.add("home");
         resetFrogPos();
     }
     if (frogsHome === 4) {
-        console.log('You Win!!!')
+        outcome()
     }
 }
 
@@ -198,7 +191,7 @@ function handleLoss() {
     livesEl.innerText = lives;
     resetFrogPos();
     count = setTime;
-    countdownEl.innerText = count;
+    // countdownEl.innerText = count;
 }
 
 //function to reset game board
@@ -209,7 +202,7 @@ function gameReset() {
     lives = 5;
     livesEl.innerText = lives;
     count = setTime;
-    countdownEl.innerText = count;
+    // countdownEl.innerText = count;
 }
 
 //function to load singel assets
@@ -217,7 +210,6 @@ function autoAssetLoader(arr, className) {
     arr.forEach((index) => {
         cells[index].classList.add(className);
     });
-    console.log('assets loaded')
 }
 
 //function to load all assets
@@ -227,7 +219,6 @@ function loadObstacles() {
     autoAssetLoader(logRowOne, "log");
     autoAssetLoader(logRowTwo, "log");
     autoAssetLoader(logRowThree, "log");
-    console.log('loaded')
 }
 
 // FUNCTIONS FOR OBSTACLES
@@ -286,10 +277,6 @@ function moveLogLeft(arr, interval) {
     }, interval)
 }
 
-// const logLeft = setInterval(function(arr,Interval) {
-
-// },interval)
-
 
 //Function to Move Log Right
 function moveLogRight(arr, interval) {
@@ -336,7 +323,6 @@ function moveFrogOnLog(pos, direction) {
 }
 
 
-
 //Function to Initialize Movement of all Moving Elements
 function automateObstacles(interval) {
     moveLeft(carRight, interval);
@@ -344,7 +330,6 @@ function automateObstacles(interval) {
     moveLogRight(logRowOne, interval);
     moveLogLeft(logRowTwo, interval);
     moveLogRight(logRowThree, interval);
-    console.log('automated')
 }
 
 function disableObstacles() {
@@ -356,19 +341,21 @@ function startCountdown() {
     function timer() {
         let remainingPercentage = (count / setTime) * 100;
         countdownEl.style.width = `${remainingPercentage}%`;
-        countdownEl.innerText = count;
         count--;
         if (count < 1) {
             clearInterval(timer)
         } else if (lives < 1) {
-            gameOver()
+            outcome()
         }
     }
     setInterval(timer, 1000);
 }
 
 function clearGameBoard() {
-    gameBoard.innerHTML = ""
+    gameBoard.querySelectorAll('.grid-cell').forEach(function(div) {
+        div.remove();
+    });
+    cells = []
 }
 
 function clearTimers() {
@@ -379,26 +366,38 @@ function clearTimers() {
 }
 
 
-function gameOver() {
-    clearGameBoard()
+function outcome() {
+    stopGame()
+    if(lives < 1) {
+        outcomeMessage.style.color = '#cf2a2a'
+        outcomeMessage.innerText = `Oops! You lost with a final score of ${score}. Click the play button below to try again!"`
+    } else {
+        outcomeMessage.style.color = '##2cb038'
+        outcomeMessage.innerText =`Hooray! You're a Froggy Champion! You leaped to victory with a score of ${score}! Ready to hop into another adventure? Click the play button below!`
+    }
+}
+
+
+function stopGame() {
     clearTimers()
-    setTimeout(()=> {
-        alert(`You Scored ${score}`)
-    },300)
+    clearGameBoard()
+    document.removeEventListener("keyup", inputHandler)
     startGameBtn.disabled = false
+    startGameBtn.style.pointerEvents = 'auto'
+    startScreenEl.style.display = 'flex'
 }
 
 
 //Initialize Game
 function initializeGame() {
     makeGameBoard()
+    resetFrogPos()
     loadObstacles()
     automateObstacles(800)
     checkMoveTimer = setInterval(checkMove, 50)
     startCountdown()
-    document.addEventListener("keyup", inputHandler);
+    document.addEventListener("keyup", inputHandler)
 }
 
 // ? Events
-// eventlistener for start-game button click
-startGameBtn.addEventListener("click", initializeGame);
+startGameBtn.addEventListener("click", initializeGame)

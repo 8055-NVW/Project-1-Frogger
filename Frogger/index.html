@@ -15,9 +15,24 @@
             <div class="info">Score<br><span class="score"></span></div>
             <div class="info">High-Score<br><span class="high-score">2000</span></div>
         </div>
-        <div id="game-board"><div class="preview"></div></div>
-        <button class="start-game">Play</button>
-        <div class="time-info"> <div class="countdown-outer"><div class="countdown"></div></div><p>Time</p></div>
+        <div id="game-board">
+            <div class="rules-score">
+                <h1>Frogger 🐸✨</h1>
+                <p>Guide your frog to lily pads while avoiding cars and river hazards. Use arrow keys, zip through traffic and river obstacles within <strong>20</strong> seconds per lily pad.</strong></p>
+
+                <p>Earn <strong>100</strong> points per lily pad, starting with <strong>5</strong> lives. Lose one if hit by a car,drown or run out of time. Game over when time's up or lives depleted.</strong></p>
+            
+                <p>Ready to hop into action? Click the <strong>PLAY</strong> button below!</p>
+                <p id="message"></p>
+            </div>
+        </div>
+        <button class="start-game">PLAY</button>
+        <div class="time-info">
+            <div class="countdown-outer">
+                <div class="countdown"></div>
+            </div>
+            <p>Time Left</p>
+        </div>
     </main>
     <script src="scripts/app.js"></script>
 </body>
