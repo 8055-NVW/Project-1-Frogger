@@ -13,8 +13,8 @@ let deadSound = new Audio('../Frogger/soundassets/dead.wav')
 let homeSound = new Audio('../Frogger/soundassets/home.wav')
 let jumpSound = new Audio('../Frogger/soundassets/jump.flac')
 let loseSound = new Audio('../Frogger/soundassets/lose.wav')
-let winSound = new Audio('../Frogger/soundassets/win.wav')
-let soundTrack = new Audio('soundtrack.m4a')
+let winSound = new Audio('soundassets/win.wav')
+let soundTrack = new Audio('soundassets/soundtrack.m4a')
 
 // ? Variables
 let score = 0
