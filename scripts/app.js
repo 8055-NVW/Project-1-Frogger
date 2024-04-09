@@ -12,13 +12,9 @@ const outcomeMessage = document.querySelector('#message')
 let deadSound = new Audio('../Frogger/soundassets/dead.wav')
 let homeSound = new Audio('../Frogger/soundassets/home.wav')
 let jumpSound = new Audio('../Frogger/soundassets/jump.flac')
-let homesound = new Audio('../Frogger/soundassets/dead.wav')
 let loseSound = new Audio('../Frogger/soundassets/lose.wav')
 let winSound = new Audio('../Frogger/soundassets/win.wav')
 let soundTrack = new Audio('../Frogger/soundassets/soundtrack.m4a')
-
-
-
 
 // ? Variables
 let score = 0
@@ -382,10 +378,8 @@ function stopGame() {
     startScreenEl.style.display = 'flex'
 }
 
-
-
-//Initialize Game
-function initializeGame() {
+//Initialise Game
+function initialiseGame() {
     soundTrack.play()
     makeGameBoard()
     resetFrogPos()
@@ -397,4 +391,4 @@ function initializeGame() {
 }
 
 // ? Events
-startGameBtn.addEventListener("click", initializeGame)
+startGameBtn.addEventListener("click", initialiseGame)
