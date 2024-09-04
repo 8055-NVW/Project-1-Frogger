@@ -123,3 +123,10 @@ Have the high score save even after the page is refreshed
 Refactor the logic for the autonomous movement of objects as I believe that can be made into a single function.
 
 Aim to finish logic to store highscores and display them even after the page has been refreshed.
+
+
+## Bug Fixes v1
+
+Recieved helpful input from a user Nathan who found a bug with the a loss being initiated if the frog was postioned on the top left most part of the screen.
+This was being caused due to faulty logic handling the frogs positiion on the log.
+Have improved this to insure correct functiong of the game.

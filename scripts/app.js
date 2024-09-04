@@ -158,17 +158,17 @@ function checkWin() {
     }
     //Extra Points on game finish
     if (frogsHome === 4) {
-        if(lives === 5){
+        if (lives === 5) {
             score += 500
-        }else if(lives === 4) {
+        } else if (lives === 4) {
             score += 400
-        }else if(lives === 3) {
+        } else if (lives === 3) {
             score += 300
-        }else if(lives === 2) {
+        } else if (lives === 2) {
             score += 200
-        }else if( lives === 1) {
+        } else if (lives === 1) {
             score += 100
-        } 
+        }
         outcome()
     }
 }
@@ -296,10 +296,16 @@ function moveLogRight(arr, interval) {
 
 //Function to Move Frog on the Log
 function moveFrogOnLog(pos, direction) {
+    // if frog is on a log and not moved
     if (!frogMoved && cells[pos].classList.contains("frog")) {
-        if (froggyCurrentPos % cols === cols - 1 || froggyCurrentPos % cols === 0) {
+        // if the frog is moved in a direction AND position is off the board
+        // this was is a bug now corrected :)
+        if (direction === "right" && froggyCurrentPos % cols === cols - 1 ||
+            direction === "left" && froggyCurrentPos % cols === 0) {
+            // initiate loss
             return handleLoss()
         }
+        // remove frog from current position
         cells[froggyCurrentPos].classList.remove("frog");
         if (direction === "left") {
             froggyCurrentPos--;
@@ -309,9 +315,11 @@ function moveFrogOnLog(pos, direction) {
         cells[froggyCurrentPos].classList.add("frog");
         frogMoved = true;
     } else {
+        // frog is stationary
         frogMoved = false;
     }
 }
+
 
 //Function to Initialize Movement of all Moving Elements
 function automateObstacles(interval) {
